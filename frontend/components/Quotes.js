@@ -1,46 +1,66 @@
-import React from 'react'
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleFakeQuotesDisplay, deleteQuote, setHightlightQuote, markFakeQuote } from "../state/quotesSlice";
 
 export default function Quotes() {
-  const quotes = [{ // ✨ `quotes` must come from the Redux store
-    id: 3,
-    quoteText: "Be yourself; everyone else is already taken.",
-    authorName: "Oscar Wilde",
-    apocryphal: false,
-  }]
-  const displayAllQuotes = true // ✨ `displayAllQuotes` must come from the Redux store
-  const highlightedQuote = 3 // ✨ `highlightedQuote` must come from the Redux store
+  const quotes = useSelector((st) => st.quotes.quotes)
+  const displayAllQuotes = useSelector(st => st.quotes.displayAllQuotes); 
+  const highlightedQuote = useSelector(st => st.quotes.highlightedQuote); 
+  const dispatch = useDispatch()
 
   return (
     <div id="quotes">
       <h3>Quotes</h3>
       <div>
-        {
-          quotes
-            ?.filter(qt => {
-              return displayAllQuotes || !qt.apocryphal
-            })
-            .map(qt => (
-              <div
-                key={qt.id}
-                className={`quote${qt.apocryphal ? " fake" : ''}${highlightedQuote === qt.id ? " highlight" : ''}`}
-              >
-                <div>{qt.quoteText}</div>
-                <div>{qt.authorName}</div>
-                <div className="quote-buttons">
-                  <button onClick={() => {/* ✨ dispatch an action */ }}>DELETE</button>
-                  <button onClick={() => {/* ✨ dispatch an action */ }}>HIGHLIGHT</button>
-                  <button onClick={() => {/* ✨ dispatch an action */ }}>FAKE</button>
-                </div>
+        {quotes
+          ?.filter((qt) => {
+            return displayAllQuotes || !qt.apocryphal;
+          })
+          .map((qt) => (
+            <div
+              key={qt.id}
+              className={`quote${qt.apocryphal ? " fake" : ""}${
+                highlightedQuote === qt.id ? " highlight" : ""
+              }`}
+            >
+              <div>{qt.quoteText}</div>
+              <div>{qt.authorName}</div>
+              <div className="quote-buttons">
+                <button
+                  onClick={() => {
+                    dispatch(deleteQuote(qt.id))
+                  }}
+                >
+                  DELETE
+                </button>
+                <button
+                  onClick={() => {
+                    dispatch(setHightlightQuote(qt.id))
+                  }}
+                >
+                  HIGHLIGHT
+                </button>
+                <button
+                  onClick={() => {
+                    dispatch(markFakeQuote(qt.id))
+                  }}
+                >
+                  FAKE
+                </button>
               </div>
-            ))
-        }
-        {
-          !quotes?.length && "No quotes here! Go write some."
-        }
+            </div>
+          ))}
+        {!quotes?.length && "No quotes here! Go write some."}
       </div>
-      {!!quotes?.length && <button onClick={() => {/* ✨ dispatch an action */ }}>
-        {displayAllQuotes ? 'HIDE' : 'SHOW'} FAKE QUOTES
-      </button>}
+      {!!quotes?.length && (
+        <button
+          onClick={() => {
+            dispatch(toggleFakeQuotesDisplay())
+          }}
+        >
+          {displayAllQuotes ? "HIDE" : "SHOW"} FAKE QUOTES
+        </button>
+      )}
     </div>
-  )
+  );
 }
